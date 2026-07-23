@@ -142,7 +142,7 @@ Access all [Tailscale CLI](https://tailscale.com/kb/1080/cli) commands plus help
 | `ddev tailscale <any tailscale command>` | Run any Tailscale CLI command in the web container |
 
 **Notes:**
-- The add-on uses the port configured in `DDEV_ROUTER_HTTP_PORT` (default: `80`). To use a custom port, add `--port=<port number>` to your command. Example: `ddev tailscale share --port=8025 --public` exposes the Mailpit service to the internet. Only ports inside the `web` service are supported.
+- The add-on proxies port `80` inside the DDEV web container by default. `DDEV_ROUTER_HTTP_PORT` is a host-side router port and is intentionally not used. To expose another service in the web container, add `--port=<port number>`. Example: `ddev tailscale share --port=8025 --public` exposes Mailpit. Only ports inside the `web` service are supported.
 - The script now checks authentication before running commands and provides clearer error messages and guidance for login.
 - Proxy/funnel status and reset are handled automatically to avoid port conflicts and stale configurations.
 
@@ -168,6 +168,12 @@ If you get an error while running the share command, check your authentication s
 - Run `ddev tailscale login` to authenticate interactively if needed.
 - If you encounter port conflicts or stale proxy/funnel handlers, the script will attempt to reset and retry automatically.
 If problems persist, try logging out using `ddev tailscale logout` and then rerun your command (`ddev tailscale share`, `ddev tailscale launch`, or your custom command).
+
+If HTTPS has a valid certificate but returns `502`, recreate Serve with the web container's HTTP port:
+
+```bash
+ddev tailscale share --port=80
+```
 
 
 ## Components of the Repository

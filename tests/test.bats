@@ -251,6 +251,23 @@ teardown() {
   # Test share command with --help flag
   run ddev tailscale share --help 2>/dev/null || run ddev tailscale serve --help
   # One of these should work to show the command is properly structured
+
+  run ddev tailscale --help
+  assert_success
+  assert_output --partial "different web-container port (default: 80)"
+
+  run grep -F 'local port="80"' .ddev/commands/host/tailscale
+  assert_success
+
+  run grep -F 'local port="${DDEV_ROUTER_HTTP_PORT:-80}"' .ddev/commands/host/tailscale
+  assert_failure
+
+  run grep -F 'auth_status=$(ddev exec -s web bash -c' .ddev/commands/host/tailscale
+  assert_success
+
+  run ddev tailscale share --port=invalid
+  assert_failure
+  assert_output --partial "--port must be an integer between 1 and 65535"
 }
 
 @test "configuration files are properly installed" {
