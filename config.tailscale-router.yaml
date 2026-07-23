@@ -7,4 +7,4 @@ web_extra_daemons:
 
 hooks:
   pre-stop:
-    - exec: tailscale logout || true
+    - exec: test "${TS_LOGOUT_ON_STOP:-false}" != "true" || tailscale logout || true

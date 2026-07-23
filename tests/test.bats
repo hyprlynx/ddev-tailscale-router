@@ -78,6 +78,14 @@ teardown() {
   # Check for any ERROR messages in restart output
   refute_output --partial "ERROR (spawn error)"
   refute_output --partial "tailscale-service: ERROR"
+
+  run ddev exec supervisorctl status webextradaemons:tailscale-service
+  assert_success
+  assert_output --partial "RUNNING"
+
+  run ddev exec stat -c '%U:%G %a' /var/run/tailscale
+  assert_success
+  assert_output "dev:dev 700"
 }
 
 @test "tailscale command exists and responds" {
@@ -116,6 +124,9 @@ teardown() {
   
   # Check if docker-compose override exists
   assert_file_exist .ddev/docker-compose.tailscale-router.yaml
+
+  # Check if the socket-directory entrypoint exists
+  assert_file_exist .ddev/web-entrypoint.d/tailscale-socket-dir.sh
 }
 
 @test "tailscale service installation in web container" {
@@ -186,6 +197,10 @@ teardown() {
   
   # Should output the port number (default 80 or custom port)
   [[ "$output" =~ ^[0-9]+$ ]]
+
+  run ddev exec "echo \$TS_LOGOUT_ON_STOP"
+  assert_success
+  assert_output "false"
 }
 
 @test "tailscale url and launch commands exist" {
@@ -250,6 +265,8 @@ teardown() {
   assert_file_exist .ddev/config.tailscale-router.yaml
   
   assert_file_exist .ddev/web-build/Dockerfile.tailscale-router
+
+  assert_file_exist .ddev/web-entrypoint.d/tailscale-socket-dir.sh
   
   assert_file_exist .ddev/docker-compose.tailscale-router.yaml
 }

@@ -4,6 +4,7 @@ services:
     environment:
         - TS_AUTHKEY=${TS_AUTHKEY:-}
         - TS_EXTRA_ARGS=${TS_EXTRA_ARGS:-}
+        - TS_LOGOUT_ON_STOP=${TS_LOGOUT_ON_STOP:-false}
         - TS_STATE_DIR=/var/lib/tailscale
     volumes:
         - tailscale-router-state:/var/lib/tailscale

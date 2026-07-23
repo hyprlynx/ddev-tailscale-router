@@ -114,6 +114,18 @@ To revert to private mode (only accessible to your Tailscale devices):
 ddev tailscale share
 ```
 
+### Authentication Persistence
+
+Authentication is stored in the project's `tailscale-router-state` Docker volume and persists across DDEV restarts. Treat that volume as sensitive because it contains the project's Tailscale node identity.
+
+To revoke the identity manually before deleting or archiving a project:
+
+```bash
+ddev tailscale logout
+```
+
+To log out automatically whenever the project stops, set `TS_LOGOUT_ON_STOP=true` before starting DDEV. Persistent authentication is the default so normal restarts do not create a new Tailscale node.
+
 ## Usage
 
 Access all [Tailscale CLI](https://tailscale.com/kb/1080/cli) commands plus helpful shortcuts:
@@ -166,6 +178,7 @@ If problems persist, try logging out using `ddev tailscale logout` and then reru
 - **`config.tailscale-router.yaml`** – Main YAML configuration for Tailscale router settings
 - **`commands/host/tailscale`** – Bash wrapper for DDEV host, provides Tailscale CLI access and shortcuts
 - **`web-build/Dockerfile.tailscale-router`** – Dockerfile for building the web container with Tailscale support
+- **`web-entrypoint.d/tailscale-socket-dir.sh`** – Creates the runtime socket directory with ownership for DDEV's unprivileged web user
 - **`tests/test.bats`** – Automated BATS test script for verifying Tailscale integration
 - **`tests/testdata/`** – Test data for automated tests
 - **`.github/workflows/tests.yml`** – GitHub Actions workflow for automated testing

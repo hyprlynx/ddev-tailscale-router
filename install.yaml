@@ -4,6 +4,7 @@ project_files:
   - config.tailscale-router.yaml
   - commands/host/tailscale
   - web-build/Dockerfile.tailscale-router
+  - web-entrypoint.d/tailscale-socket-dir.sh
   - docker-compose.tailscale-router.yaml
 
 ddev_version_constraint: '>= v1.24.3'
