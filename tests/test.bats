@@ -83,9 +83,9 @@ teardown() {
   assert_success
   assert_output --partial "RUNNING"
 
-  run ddev exec stat -c '%U:%G %a' /var/run/tailscale
+  run ddev exec bash -c 'test "$(stat -c %u:%g /var/run/tailscale)" = "$(id -u):$(id -g)" && stat -c %a /var/run/tailscale'
   assert_success
-  assert_output "dev:dev 700"
+  assert_output "700"
 }
 
 @test "tailscale command exists and responds" {
